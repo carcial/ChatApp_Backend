@@ -1,16 +1,19 @@
 package com.example.chat_app_backend.messages;
 
-import com.example.chat_app_backend.chats.UserChat;
+
+import com.example.chat_app_backend.images.Images;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.List;
+
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -23,16 +26,39 @@ public class Messages {
     private Long messageId;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "Text")
+    @Column(columnDefinition = "Text")
     private String message;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "message")
-    private List<UserChat> allChats;
+    @OneToOne(fetch = FetchType.EAGER)
+    private Images images;
 
     @Column(nullable = false)
-    private Date sendingTime = Date.valueOf(LocalDate.now());
+    @DateTimeFormat(pattern = "HH:mm dd.MM.yyyy")
+    @JsonFormat(pattern = "HH:mm dd.MM.yyyy")
+    private LocalDateTime sendingTime = LocalDateTime.now();
+
+
 
     public Messages(String message) {
         this.message = message;
+    }
+
+    public Messages(Images images) {
+        this.images = images;
+    }
+
+    public Messages(String message, Images images) {
+        this.message = message;
+        this.images = images;
+    }
+
+
+
+    @Override
+    public String toString() {
+        return "Messages{" +
+                "message='" + message + '\'' +
+                ", sendingTime=" + sendingTime +
+                '}';
     }
 }

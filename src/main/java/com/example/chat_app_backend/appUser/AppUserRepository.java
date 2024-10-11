@@ -12,8 +12,9 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
             " then true else false end " +
             "FROM AppUser u " +
             "where u.email = ?1")
-    boolean findUserByEmail(String mail);
+    boolean findUserByEmail(String email);
 
     @Query("select u from AppUser u where u.email =?1")
     AppUser findAppUserByEmail(String email);
+
 }

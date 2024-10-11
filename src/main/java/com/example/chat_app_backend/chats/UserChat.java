@@ -24,6 +24,16 @@ public class UserChat {
     private AppUser receiver;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "messageID", nullable = false)
+    @JoinColumn(name = "messageID")
     private Messages message;
+
+
+    @Override
+    public String toString() {
+        return "UserChat{" +
+                "sender=" + sender.getUserName()+
+                ", receiver=" + receiver.getUserName() +
+                ", message=" + message.getMessage() +
+                '}';
+    }
 }

@@ -1,6 +1,9 @@
 package com.example.chat_app_backend.appUser;
 
 import com.example.chat_app_backend.chats.UserChat;
+import com.example.chat_app_backend.images.Images;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -25,9 +30,8 @@ public class AppUser {
     private String email;
     private String password;
 
-    @Lob
-    @Column(name = "profile_pic",columnDefinition = "Text")
-    private String profilePic;
+    @OneToOne(fetch = FetchType.LAZY)
+    private Images profilePic;
 
     @OneToMany(mappedBy = "sender")
     private Collection<UserChat> sender;
@@ -40,10 +44,16 @@ public class AppUser {
                                     inverseJoinColumns = {@JoinColumn(name = "FriendID")})
     private Set<AppUser> friends;
 
+
     @ManyToMany
-    @JoinTable(name = "FriendshipInvitation", joinColumns = {@JoinColumn(name = "SenderOfFriendship")},
+    @JoinTable(name = "FriendshipInvitationTO", joinColumns = {@JoinColumn(name = "SenderOfFriendship")},
                                               inverseJoinColumns = {@JoinColumn(name = "ReceiverOfFriendship")})
-    private Set<AppUser> friendsInvitation;
+    private Set<AppUser> sendFriendInvitationTO;
+
+    @ManyToMany
+    @JoinTable(name = "FriendshipInvitationFROM", joinColumns = {@JoinColumn(name = "ReceiverOfFriendship")},
+                                             inverseJoinColumns = {@JoinColumn(name = "SenderOfFriendship")})
+    private Set<AppUser> receiveFriendInvitationFROM;
 
     public AppUser(String userName, String email, String password) {
         this.userName = userName;
@@ -56,11 +66,15 @@ public class AppUser {
         this.password = password;
     }
 
+
+    //This user can invite another user(friend)
     public void inviteFriend(AppUser friend){
-        this.friendsInvitation.add(friend);
+        this.sendFriendInvitationTO.add(friend);
     }
 
+    //This user can accept the invitation of another user(friend)
     public void acceptInvitation(AppUser friend){
         this.friends.add(friend);
     }
+
 }
