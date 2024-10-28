@@ -14,14 +14,14 @@ public class ChatConfiguration implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/start");
+        config.enableSimpleBroker("/start", "/user");  // Added /user for private messaging
         config.setApplicationDestinationPrefixes("/current");
+        //config.setUserDestinationPrefix("/user");
     }
 
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/testchat")
-                .setAllowedOrigins("http://localhost:8080","http://eparinay.spring.test")
-                .withSockJS();
+                .addEndpoint("/ws")
+                .setAllowedOrigins("*");
     }
 }

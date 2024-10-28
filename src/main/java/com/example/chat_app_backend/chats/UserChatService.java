@@ -10,11 +10,13 @@ import com.example.chat_app_backend.messages.MessageRepository;
 import com.example.chat_app_backend.messages.Messages;
 import com.example.chat_app_backend.messages.MessagesDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.mock.web.MockMultipartFile;
+
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,8 @@ public class UserChatService {
 
     private final ImagesService imagesService;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+
 
 
 
@@ -35,25 +39,25 @@ public class UserChatService {
         return new AppUserChatDTO(appUser.getId(), appUser.getUserName());
     }
 
-    public MultipartFile byteArrayToMultipartFile(byte[] imageBytes, String contentType){
-        byte[] decompressedImageBytes  = imagesService.decompressImage(imageBytes);
-        return new MockMultipartFile("file", "file", contentType, decompressedImageBytes);
-    }
-
-    public MessagesDTO convertMessagesTo_DTO(Messages messages){
 
 
+    public MessagesDTO convertMessagesTo_DTO(Messages messages, Long senderId){
+        Long imageId = 0L; // Zero("0") implies that there is no image attached to that message
+        if (messages.getImages() != null && messages.getImages().getImageID() != null) {
+            imageId = messages.getImages().getImageID();
+        }
         return new MessagesDTO(messages.getMessageId(),
-                               messages.getMessage(),
-                               messages.getMessage(),
-                               messages.getSendingTime());
+                senderId,
+                imageId,
+                messages.getMessage(),
+               LocalDateTime.now());
     }
 
     public UserChatDTO convertUserChatTo_DTO(UserChat userChat){
         return new UserChatDTO(userChat.getChatId(),
                 convertAppUserTo_DTO(userChat.getSender()),
                 convertAppUserTo_DTO(userChat.getReceiver()),
-                userChat.getMessage());
+                convertMessagesTo_DTO(userChat.getMessage(), userChat.getSender().getId()));
     }
 
 
@@ -65,7 +69,7 @@ public class UserChatService {
             throw new IllegalStateException("These users are not friends");
         }
         if(message == null & file.isEmpty()){
-            throw new IllegalStateException("There is no message and no file");
+            throw new IllegalStateException("There was no message and no file");
         }
 
 
@@ -80,7 +84,8 @@ public class UserChatService {
         UserChat userChat = new UserChat();
 
         Messages messages = new Messages(message);
-        if(!file.isEmpty()){
+
+        if (!file.isEmpty()) {
             Images images = new Images(file.getBytes(), file.getContentType());
             messages.setImages(images);
             messages = imagesService.compressImagesInMessages(messages);
@@ -94,6 +99,15 @@ public class UserChatService {
         messageRepository.save(messages);
         userChatRepository.save(userChat);
 
+
+        MessagesDTO messagesDTO = convertMessagesTo_DTO(messages, senderID);
+        messagingTemplate.convertAndSendToUser(receiverID.toString(),
+                "/start/chat",
+                messagesDTO); // Notify receiver
+        messagingTemplate.convertAndSendToUser(senderID.toString(),
+                "/start/chat",
+                messagesDTO);   // Notify sender
+
         return "message send successfully ";
     }
 
@@ -105,14 +119,7 @@ public class UserChatService {
         }
         return userChatRepository.conversation(senderID, receiverID)
                 .stream()
-                .map(uc -> {
-                    if (uc.getMessage().getImages() != null && uc.getMessage().getImages().getImage() != null) {
-                        uc.getMessage().getImages().setImage(
-                                imagesService.decompressImage(uc.getMessage().getImages().getImage())
-                        );
-                    }
-                    return convertUserChatTo_DTO(uc);
-                })
+                .map(this::convertUserChatTo_DTO)
                 .collect(Collectors.toList());
     }
 }

@@ -57,7 +57,10 @@ public class AppSecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for API requests
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/chats/**", "/api/v1/user/**", "/api/v1/download/**")
+                        .requestMatchers("/api/v1/chats/**",
+                                "/api/v1/user/**",
+                                "/api/v1/download/**",
+                                "/ws/**")
                         .permitAll()  // Allow these endpoints without authentication
                 )
                 .cors(Customizer.withDefaults())  // Enable CORS with default configuration
@@ -70,7 +73,7 @@ public class AppSecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);  // Allow cookies, credentials
-        config.setAllowedOriginPatterns(List.of("http://127.0.0.1:5173"));  // Allow your React app's URL
+        config.setAllowedOriginPatterns(List.of("http://127.0.0.1:5174"));  // Allow your React app's URL
         config.addAllowedHeader("*");  // Allow all headers
         config.addAllowedMethod("*");  // Allow all HTTP methods
 

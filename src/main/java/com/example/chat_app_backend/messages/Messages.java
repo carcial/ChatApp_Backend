@@ -33,8 +33,8 @@ public class Messages {
     private Images images;
 
     @Column(nullable = false)
-    @DateTimeFormat(pattern = "HH:mm dd.MM.yyyy")
-    @JsonFormat(pattern = "HH:mm dd.MM.yyyy")
+    @DateTimeFormat(pattern = "HH:mm   dd.MM.yyyy")
+    @JsonFormat(pattern = "HH:mm   dd.MM.yyyy")
     private LocalDateTime sendingTime = LocalDateTime.now();
 
 

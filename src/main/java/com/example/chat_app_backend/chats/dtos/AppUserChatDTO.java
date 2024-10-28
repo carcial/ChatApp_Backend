@@ -1,7 +1,6 @@
 package com.example.chat_app_backend.chats.dtos;
 
 
-import com.example.chat_app_backend.appUser.AppUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

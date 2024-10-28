@@ -1,5 +1,6 @@
 package com.example.chat_app_backend.messages;
 
+import com.example.chat_app_backend.images.ImageDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,13 @@ import java.time.LocalDateTime;
 public class MessagesDTO {
 
     private Long messageId;
+    private Long senderId;
+    private Long imageId;
     private String message;
-    private String fileDownloadLink; // Instead of returning the entire file
+    //private ImageDTO image; // Instead of returning the entire file
+
+    @DateTimeFormat(pattern = "HH:mm   dd.MM.yyyy")
+    @JsonFormat(pattern = "HH:mm   dd.MM.yyyy")
     private LocalDateTime sendingTime;
+
 }

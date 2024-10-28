@@ -26,6 +26,7 @@ public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String userName;
     private String email;
     private String password;
@@ -55,17 +56,6 @@ public class AppUser {
                                              inverseJoinColumns = {@JoinColumn(name = "SenderOfFriendship")})
     private Set<AppUser> receiveFriendInvitationFROM;
 
-    public AppUser(String userName, String email, String password) {
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-    }
-
-    public AppUser(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
 
     //This user can invite another user(friend)
     public void inviteFriend(AppUser friend){
@@ -75,6 +65,10 @@ public class AppUser {
     //This user can accept the invitation of another user(friend)
     public void acceptInvitation(AppUser friend){
         this.friends.add(friend);
+    }
+
+    public void refuseInvitation(AppUser senderOfInvitation){
+        this.receiveFriendInvitationFROM.remove(senderOfInvitation);
     }
 
 }

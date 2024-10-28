@@ -1,9 +1,15 @@
 package com.example.chat_app_backend.appUser;
 
+import com.example.chat_app_backend.appUser.dtos.AppUserDTO;
+import com.example.chat_app_backend.appUser.dtos.SearchedAppUserDTO;
+import com.example.chat_app_backend.images.Images;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -44,7 +50,7 @@ public class AppUserController {
 
     }
 
-    @PutMapping("/acceptInvitation/{invitationReceiverID}/{invitationSenderID}")
+    @PatchMapping("/acceptInvitation/{invitationReceiverID}/{invitationSenderID}")
     public ResponseEntity<String> acceptInvitation(@PathVariable("invitationReceiverID") Long invitationReceiverID,
                                    @PathVariable("invitationSenderID") Long invitationSenderID){
         try {
@@ -55,5 +61,45 @@ public class AppUserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PatchMapping("/refuseInvitation/{invitationSenderID}/{invitationReceiverID}")
+    public ResponseEntity<String> refuseInvitation(@PathVariable Long invitationSenderID,
+                                                   @PathVariable Long invitationReceiverID){
+        try {
+            String result = appUserService.refuseInvitation(invitationSenderID, invitationReceiverID);
+            return ResponseEntity.ok(result);
+        }
+        catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+    }
+
+    @GetMapping("seeOtherUsers/{userID}")
+    public ResponseEntity<List<SearchedAppUserDTO>> getSearchedUsers(@PathVariable Long userID){
+        try {
+            List<SearchedAppUserDTO> result = appUserService.getSearchedAppUser(userID);
+            return ResponseEntity.ok(result);
+        }
+        catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @GetMapping("getAnImage/{imageId}")
+    public ResponseEntity<?> getUploadedImage(@PathVariable Long imageId){
+       try {
+           Images images = appUserService.getUploadedImage(imageId);
+           return ResponseEntity.status(HttpStatus.OK)
+                   .contentType(MediaType.valueOf(images.getImageContentType()))
+                   .body(images.getImage());
+       }
+       catch (IllegalStateException e){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+       }
+
+    }
+
+
 }
 

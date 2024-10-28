@@ -1,4 +1,4 @@
-package com.example.chat_app_backend.appUser;
+package com.example.chat_app_backend.appUser.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

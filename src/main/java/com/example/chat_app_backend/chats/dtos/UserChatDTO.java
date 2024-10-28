@@ -13,6 +13,6 @@ public class UserChatDTO {
     private Long chatId;
     private AppUserChatDTO sender;
     private AppUserChatDTO receiver;
-    private Messages messages;
-    //private MessagesDTO messages;
+    private MessagesDTO messages;
+   // private MessagesDTO messages;
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Objects;
+
 @Component
 @AllArgsConstructor
 public class WebSocketEventListener {
@@ -28,7 +30,7 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectLister(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String username = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("username");
         if(username !=null) {
             logger.info("User Disconnected:"+username);
             String chatMessage=username +" is Offline....";
