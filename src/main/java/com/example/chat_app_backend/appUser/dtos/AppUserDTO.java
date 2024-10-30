@@ -12,6 +12,8 @@ import java.util.Set;
 public class AppUserDTO {
 
     private Long id;
+
+    private Long profilePic_imageId;
     private String userName;
     private String email;
     private Set<AppUserDTO> friends;

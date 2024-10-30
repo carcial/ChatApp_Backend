@@ -6,10 +6,10 @@ import com.example.chat_app_backend.appUser.dtos.SearchedAppUserDTO;
 import com.example.chat_app_backend.images.Images;
 import com.example.chat_app_backend.images.ImagesRepository;
 import com.example.chat_app_backend.images.ImagesService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,7 @@ public class AppUserService {
     private final ImagesRepository imagesRepository;
 
     private final ImagesService imagesService;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final SimpMessageSendingOperations messagingTemplate;
@@ -62,7 +63,34 @@ public class AppUserService {
         throw new BadCredentialsException("Invalid email or password");
     }
 
+
+    @Transactional
+    public AppUserDTO updateAppUser(Long id, String newUserName, String newEmail, String newPassword){
+
+        AppUser appUser = appUserRepository.findById(id).orElseThrow(() ->
+                new IllegalStateException("There is user with ID: "+ id));
+
+        if (newUserName != null && !newUserName.isEmpty() && !newUserName.equals(appUser.getUserName())) {
+            appUser.setUserName(newUserName);
+        }
+        if (newEmail != null && !newEmail.isEmpty() && !newEmail.equals(appUser.getEmail())) {
+            appUser.setEmail(newEmail);
+        }
+        if (newPassword != null && !newPassword.isEmpty() && !bCryptPasswordEncoder.matches(newPassword, appUser.getPassword())) {
+            appUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        }
+
+        appUserRepository.save(appUser);
+
+        return convertToDTO(appUser);
+    }
+
+
     public AppUserDTO convertToDTO(AppUser appUser){
+        Long profilePic_imageId = 0L;
+        if(appUser.getProfilePic() != null){
+            profilePic_imageId = appUser.getProfilePic().getImageID();
+        }
         Set<AppUserDTO> sendFriendInvitationDTO = appUser.getSendFriendInvitationTO()
                 .stream()
                 .map(invitedFriends -> new AppUserDTO(invitedFriends.getId(),
@@ -82,6 +110,7 @@ public class AppUserService {
                         friend.getEmail()))
                 .collect(Collectors.toSet());
         return new AppUserDTO(appUser.getId(),
+                profilePic_imageId,
                 appUser.getUserName(),
                 appUser.getEmail(),
                 friendsDTO,
@@ -205,7 +234,7 @@ public class AppUserService {
             throw new IllegalStateException("This user does not exist");
         }
 
-        return appUserRepository.findAllById(userId)
+        return appUserRepository.findAllOtherUsers(userId)
                 .stream()
                 .map(this::convertAppUserTo_DTO)
                 .collect(Collectors.toList());

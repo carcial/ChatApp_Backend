@@ -36,6 +36,22 @@ public class AppUserController {
         }
     }
 
+    @PutMapping("/updateUserInfos/{id}")
+    public ResponseEntity<AppUserDTO> updateUser(@PathVariable Long id,
+                                                 @RequestParam(required = false) String newUserName,
+                                                 @RequestParam(required = false) String newEmail,
+                                                 @RequestParam(required = false) String newPassword){
+
+        try {
+            AppUserDTO appUserDTO = appUserService.updateAppUser(id, newUserName, newEmail, newPassword);
+            return ResponseEntity.ok(appUserDTO);
+        }
+        catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+    }
+
 
     @PatchMapping("/invitation/{invitationSenderID}/{invitationReceiverID}")
     public ResponseEntity<String> inviteFriend(@PathVariable("invitationSenderID") Long invitationSenderID,
