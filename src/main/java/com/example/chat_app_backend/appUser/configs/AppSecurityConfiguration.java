@@ -60,7 +60,7 @@ public class AppSecurityConfiguration {
                         .requestMatchers("/api/v1/chats/**",
                                 "/api/v1/user/**",
                                 "/api/v1/download/**",
-                                "/ws/**")
+                                "/ws/**", "/api/v1/user/register", "/api/v1/user/login")
                         .permitAll()  // Allow these endpoints without authentication
                 )
                 .cors(Customizer.withDefaults())  // Enable CORS with default configuration
