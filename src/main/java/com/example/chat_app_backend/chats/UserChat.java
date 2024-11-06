@@ -3,12 +3,16 @@ package com.example.chat_app_backend.chats;
 import com.example.chat_app_backend.appUser.AppUser;
 import com.example.chat_app_backend.messages.Messages;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserChat {
 
     @Id

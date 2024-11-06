@@ -73,7 +73,7 @@ public class AppSecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);  // Allow cookies, credentials
-        config.setAllowedOriginPatterns(List.of("http://127.0.0.1:5174"));  // Allow your React app's URL
+        config.setAllowedOriginPatterns(List.of("*"));  // Allow your React app's URL
         config.addAllowedHeader("*");  // Allow all headers
         config.addAllowedMethod("*");  // Allow all HTTP methods
 

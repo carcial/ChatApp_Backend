@@ -50,7 +50,7 @@ public class UserChatService {
                 senderId,
                 imageId,
                 messages.getMessage(),
-               LocalDateTime.now());
+               messages.getSendingTime());
     }
 
     public UserChatDTO convertUserChatTo_DTO(UserChat userChat){
