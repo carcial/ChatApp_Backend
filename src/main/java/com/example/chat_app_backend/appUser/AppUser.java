@@ -31,16 +31,16 @@ public class AppUser {
     private String email;
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Images profilePic;
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<UserChat> sender;
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<UserChat> receiver;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "AllFriends", joinColumns = {@JoinColumn(name = "UserID")},
                                     inverseJoinColumns = {@JoinColumn(name = "FriendID")})
     private Set<AppUser> friends;

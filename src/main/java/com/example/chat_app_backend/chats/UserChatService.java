@@ -9,6 +9,7 @@ import com.example.chat_app_backend.images.ImagesService;
 import com.example.chat_app_backend.messages.MessageRepository;
 import com.example.chat_app_backend.messages.Messages;
 import com.example.chat_app_backend.messages.MessagesDTO;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
@@ -109,6 +110,24 @@ public class UserChatService {
                 messagesDTO);   // Notify sender
 
         return "message send successfully ";
+    }
+
+    @Transactional
+    public String deleteUserChat(Long userChatID){
+        UserChat userChat = userChatRepository.findById(userChatID).orElseThrow(() ->{
+            throw new IllegalStateException("There was no Chat with ID: "+ userChatID);
+        });
+        if(userChat.getMessage().getMessageId() != null){
+            Messages messages = messageRepository.findMessagesByID(userChat.getMessage().getMessageId());
+
+            if(messages.getImages() != null){
+                imagesService.deleteImageById(messages.getImages().getImageID());
+            }
+            messageRepository.delete(messages);
+        }
+        userChatRepository.delete(userChat);
+
+        return "UserChat deleted successfully";
     }
 
     public List<UserChatDTO> getConversation(Long senderID, Long receiverID){

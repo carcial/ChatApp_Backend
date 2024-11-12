@@ -19,15 +19,15 @@ public class UserChat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender", nullable = false)
     private AppUser sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver", nullable = false)
     private AppUser receiver;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "messageID")
     private Messages message;
 

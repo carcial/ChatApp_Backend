@@ -52,6 +52,9 @@ public class ImagesService {
     }
 
 
+    public void deleteImageById(Long imageId){
+        imagesRepository.deleteById(imageId);
+    }
 
 
 

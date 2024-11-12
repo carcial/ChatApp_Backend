@@ -43,6 +43,17 @@ public class UserChatController {
     }
 
 
+    @DeleteMapping("/deleteChat/{chatID}")
+    public ResponseEntity<String> deleteChat(@PathVariable Long chatID){
+        try {
+            String result = userChatService.deleteUserChat(chatID);
+            return ResponseEntity.ok(result);
+        }
+        catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/conversation/{senderID}/{receiverID}")
     public ResponseEntity<List<UserChatDTO>> getConversation(@PathVariable("senderID") Long senderID,
                                                              @PathVariable("receiverID") Long receiverID){

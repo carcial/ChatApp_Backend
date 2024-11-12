@@ -36,6 +36,18 @@ public class AppUserController {
         }
     }
 
+    @DeleteMapping("/deleteUser/{userID}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userID){
+        try {
+            String result = appUserService.deleteAppUser(userID);
+            //String result = appUserService.deleteUserAndDependencies(userID);
+            return ResponseEntity.ok(result);
+        }
+        catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @PutMapping("/updateUserInfos/{id}")
     public ResponseEntity<AppUserDTO> updateUser(@PathVariable Long id,
                                                  @RequestParam(required = false) String newUserName,

@@ -63,6 +63,66 @@ public class AppUserService {
         throw new BadCredentialsException("Invalid email or password");
     }
 
+    /*
+    @Transactional
+    public String deleteAppUser(Long id){
+        AppUser appUser = appUserRepository.findById(id).orElseThrow(() ->
+                {throw new IllegalStateException("There is no User with ID: "+ id);});
+        appUserRepository.delete(appUser);
+        return  appUser.getUserName()+" was deleted successfully";
+    }*/
+
+
+
+    @Transactional
+    public String deleteAppUser(Long id) {
+        AppUser appUser = appUserRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("User with ID " + id + " does not exist"));
+
+        // Remove all associations
+        // Remove from friends
+        for (AppUser friend : appUser.getFriends()) {
+            friend.getFriends().remove(appUser);
+        }
+        appUser.getFriends().clear();
+
+        // Remove sent and received friend invitations
+        appUser.getSendFriendInvitationTO().clear();
+        appUser.getReceiveFriendInvitationFROM().clear();
+
+        // Remove chat associations
+        appUser.getSender().clear();
+        appUser.getReceiver().clear();
+
+        // Finally delete the user
+        appUserRepository.delete(appUser);
+        return appUser.getUserName() + " was deleted successfully";
+    }
+
+    /*
+    @Transactional
+    public String deleteUserAndDependencies(Long userId) {
+        AppUser appUser = appUserRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User with ID " + userId + " not found"));
+
+        // Delete associated UserChats where the user is the sender or receiver
+        appUserRepository.deleteUserChatsByUserId(userId);
+
+        // Delete friend references from other users to this user
+        appUserRepository.deleteFriendReferences(userId);
+
+        // Delete sent invitations
+        appUserRepository.deleteSentInvitations(userId);
+
+        // Delete received invitations
+        appUserRepository.deleteReceivedInvitations(userId);
+
+        // Finally, delete the user
+        appUserRepository.delete(appUser);
+
+        return appUser.getUserName() + " was deleted successfully along with associated data";
+    }*/
+
 
     @Transactional
     public AppUserDTO updateAppUser(Long id, String newUserName, String newEmail, String newPassword){

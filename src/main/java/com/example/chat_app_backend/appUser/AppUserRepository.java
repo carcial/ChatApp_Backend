@@ -1,7 +1,9 @@
 package com.example.chat_app_backend.appUser;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,6 +24,5 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     @Query("select u from AppUser u where u.id <> ?1")
     List<AppUser> findAllOtherUsers(Long userId);
-
 
 }
